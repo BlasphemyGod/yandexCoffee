@@ -1,17 +1,19 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAction, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QAction, QMessageBox, QDialog
 from PyQt5.QtCore import Qt
-from PyQt5 import uic
+
+from mainUI import Ui_MainWindow
+from addEditCoffeeForm import Ui_Dialog
 
 import sqlite3
 
 
-class Window(QMainWindow):
+class Window(Ui_MainWindow, QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
+        self.setupUi(self)
         self.setWindowTitle('Сорты Кофе')
 
-        self.db = sqlite3.connect('coffee.sqlite')
+        self.db = sqlite3.connect('data\\coffee.sqlite')
         self.db_cursor = self.db.cursor()
 
         add_coffee_action = QAction('Добавить кофе', self)
@@ -67,7 +69,9 @@ class Window(QMainWindow):
         self.tableWidget.resizeColumnsToContents()
 
     def add_coffee_dialog(self):
-        dialog = uic.loadUi('addEditCoffeeForm.ui')
+        dialog = QDialog()
+        Ui_Dialog.setupUi(dialog, dialog)
+
         dialog.setWindowTitle('Добавить кофе')
 
         dialog.frying_input.addItems(self.get_coffee_fryings())
@@ -104,7 +108,8 @@ class Window(QMainWindow):
         if not self.tableWidget.selectionModel().hasSelection():
             QMessageBox().question(self, '', 'Сначала выделите кофе из таблицы', QMessageBox.Ok)
         else:
-            dialog = uic.loadUi('addEditCoffeeForm.ui')
+            dialog = QDialog()
+            Ui_Dialog.setupUi(dialog, dialog)
 
             coffee = self.get_coffee(self.tableWidget.item(self.tableWidget.currentRow(), 0).text())
 
